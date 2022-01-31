@@ -1,39 +1,44 @@
 import pandas as pd
+import ast
 
-path = "StorageDatabase/Result_7.xls"
-data = pd.read_excel(open(path, 'rb',))
-df_whs = pd.DataFrame(data, columns=['whs', 'qtys'])
+
+path = "StorageDatabase/quantities_v2.xls"
+data = pd.read_excel(open(path, 'rb', ))
+df_whs = pd.DataFrame(data, columns=['whs', 'qtys', 'size_code'])
 whs_list = []
-qtys_list = [[]]
-for i in range(len(df_whs)):
+qtys_list = []
+j = 0
+print(data)
 
-    whs_temp = df_whs['whs'][i]
-    whs_temp = whs_temp.split(',')
+for i in range(len(df_whs['qtys'])):
     qtys_temp = df_whs['qtys'][i]
-    qtys_temp = qtys_temp.split(',')
-
-    for j in range(len(whs_temp)):
-
-        whs_temp[j] = whs_temp[j].replace('[','')
-        whs_temp[j] = whs_temp[j].replace(']','')
-        qtys_temp[j] = qtys_temp[j].replace('[', '')
-        qtys_temp[j] = qtys_temp[j].replace(']', '')
-
-        if whs_temp[j] not in whs_list:
-            whs_list.append(whs_temp[j])
-            qtys_list.append([])
-
-        index = whs_list.index(whs_temp[j])
-        value = qtys_temp[j]
-        qtys_list[index].append((value))
+    qtys_list.append(ast.literal_eval(qtys_temp))
 
 
+def logic(a):
+    counter = 0
 
-whs_list = whs_list[:-1]
-qtys_list = qtys_list[:-1]
+    for i in range(len(qtys_list)):
+        total = 0
+        sold = 0
+        for j in range(len(qtys_list[i]) - 1):
+            value = int(qtys_list[i][j]) - int(qtys_list[i][j + 1])
+            if value > 0:
 
-print(whs_list)
-for a in range(len(qtys_list) - 1):
-    print(qtys_list[a])
+                if abs(value) >= 7:
+                    pass
+                else:
+                    sold += value
+            # if value < 0:                 по просьбе сереги пока не надо
+            #
+            #     if abs(value) >= 7:
+            #         pass
+            #     else:
+            #         sold += value
+        print(sold)
+        counter += 1
+
+    return 'calculation complete ' + str(counter)
 
 
+print(logic(qtys_list))
